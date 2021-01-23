@@ -10,27 +10,48 @@
         $(textNode).replaceWith("<b>Hello world!</b>")
     }
 
-    function _callback(mutations, observer) {
-        // console.log(mutations, observer);
+    function _text_callback(mutations, observer) {
+        console.log(mutations, observer);
         mutations.forEach(function(mutation) {
-            switch (mutation.type) {
-                case 'characterData':
-                    break;
-                case 'childList':
-                    break;
-                default:
-                    break;
-            }
-            console.log(mutation.oldValue);
-            console.log(mutation.target);
-            console.log(observer);
-            _post_correct(mutation.target)
+            console.log(mutation.target.data);
+            // switch (mutation.type) {
+            //     case 'characterData':
+            //         break;
+            //     case 'childList':
+            //         break;
+            //     default:
+            //         break;
+            // }
+            // console.log(mutation.oldValue);
+            // console.log(observer);
+            // _post_correct(mutation.target)
         });
+    }
+
+    function _dom_callback(mutations, observer) {
+        // console.log(mutations, observer);
         // mutations.forEach(function(mutation) {
-        //     for (var i = 0; i < mutation.addedNodes.length; i++) {
-        //         insertedNodes.push(mutation.addedNodes[i]);
+        //     switch (mutation.type) {
+        //         case 'characterData':
+        //             break;
+        //         case 'childList':
+        //             break;
+        //         default:
+        //             break;
         //     }
+        //     console.log(mutation.oldValue);
+        //     console.log(mutation.target);
+        //     console.log(observer);
+        //     _post_correct(mutation.target)
         // });
+        mutations.forEach(function(mutation) {
+            for (var i = 0; i < mutation.addedNodes.length; i++) {
+                mutation.addedNodes[i]
+                var observer = new MutationObserver(_text_callback);
+                observer.observe(mutation.addedNodes[i], { childList: true, subtree: true, characterData: true, characterDataOldValue: true });
+                // insertedNodes.push(mutation.addedNodes[i]);
+            }
+        });
         // console.log(insertedNodes);
     }
 
@@ -39,9 +60,9 @@
         this._leaf = elementleaf;
         this._config = { attributes: true, childList: true, subtree: true };
 
-        this._observer = new MutationObserver(_callback);
+        this._observer = new MutationObserver(_dom_callback);
         // this._observer.observe(this._ele, { childList: true, subtree: true, characterData: true, characterDataOldValue: true });
-        this._observer.observe(this._ele, { childList: true, characterData: true });
+        this._observer.observe(this._ele, { childList: true, subtree: true });
 
         this._observers = [];
     }
