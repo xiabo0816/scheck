@@ -16,6 +16,12 @@
     }
 
     function _post_correct(textNode) {
+        if (textNode == null) {
+            return
+        }
+        if (textNode.nodeName != '#text') {
+            return
+        }
         console.log(textNode);
         // 这里就是个模拟的
         var text = textNode.textContent;
@@ -30,23 +36,36 @@
     function _text_callback(mutations, observer) {
         // console.log(mutations, observer);
         mutations.forEach(function(mutation) {
-            // console.log(mutation);
-            console.log(mutation.target.data);
+            console.log(mutation);
+            // console.log(mutation.target.data);
             if (mutation.type == 'characterData') {
                 mutationRecords.push(mutation);
             }
         });
     }
 
-    function _dom_callback(mutations, observer) {
-        mutations.forEach(function(mutation) {
-            for (var i = 0; i < mutation.addedNodes.length; i++) {
-                // [2] 在这里也监听普通的text元素
-                var observer = new MutationObserver(_text_callback);
-                observer.observe(mutation.addedNodes[i], { characterData: true, characterDataOldValue: true });
-                // insertedNodes.push(mutation.addedNodes[i]);
+    function _text_lisener(elements) {
+        for (var j = 0; j < elements.length; j++) {
+            const element = elements[j];
+            if (element.nodeName == 'S') {
+                continue
             }
-        });
+            for (let index = 0; index < element.childNodes.length; index++) {
+                _post_correct(element.childNodes[index]);
+            }
+            var observer = new MutationObserver(_text_callback);
+            observer.observe(element, { childList: true, subtree: true, characterData: true, characterDataOldValue: true });
+        }
+    }
+
+    function _dom_callback(mutations, observer) {
+        for (let index = 0; index < mutations.length; index++) {
+            const mutation = mutations[index];
+            if (mutation.target.nodeName == 'S') {
+                continue
+            }
+            _text_lisener(mutation.addedNodes)
+        }
         // console.log(insertedNodes);
     }
 
@@ -54,20 +73,14 @@
         this._ele = document.getElementById(elementid);
         this._leaf = elementleaf;
         this._config = { attributes: true, childList: true, subtree: true };
+
+        _text_lisener(this._ele.querySelectorAll('p'));
+
         // [1] 在这里监听dom树的改变
         this._observer = new MutationObserver(_dom_callback);
         // this._observer.observe(this._ele, { childList: true, subtree: true, characterData: true, characterDataOldValue: true });
         this._observer.observe(this._ele, { childList: true, subtree: true });
-
-
         this._observers = [];
-        // [2] 在这里监听普通的text元素
-        var elements = this._ele.querySelectorAll('p');
-        for (var j = 0; j < elements.length; j++) {
-            var element = elements[j];
-            var observer = new MutationObserver(_text_callback);
-            observer.observe(element, { characterData: true, characterDataOldValue: true });
-        }
 
         this.intervalID = 0;
         this.startlistener();

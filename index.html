@@ -26,6 +26,7 @@
         <div class="jumbotron">
             <p>每隔5秒，将文本中的数字高亮出来</p>
             <p>测试方法：随便输入一些文字，混杂几个阿拉伯数字</p>
+            <!-- <p>TODO: 复制进来内容的高亮还不可以</p> -->
             <p><a class="btn btn-primary" href="https://github.com/xiabo0816/scheck" role="button" target="_blank">Learn more</a></p>
         </div>
         <div id='editor'></div>
@@ -37,8 +38,8 @@
         editor.config.uploadFileName = 'dongchedashenimg';
         editor.config.showFullScreen = true;
         editor.create();
+        editor.txt.html('习近平就做好334新形势下政法工作作出重要指调示强 34顺应人民对公共安全司法公正权益保障的新期待 全力推进平安中中国过硬队伍国法治建设')
         var scheck = new Scheck('editor');
-        // editor.txt.html('习近平就做好新形势下政法工作作出重要指调示强 顺应人民对公共安全司法公正权益保障的新期待 全力推进平安中中国过硬队伍国法治建设')
     </script>
 </body>
 
